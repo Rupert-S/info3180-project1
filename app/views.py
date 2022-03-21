@@ -7,7 +7,8 @@ This file creates your application.
 
 from app import app
 from flask import render_template, request, redirect, url_for
-
+from app.models import Property
+from . import db
 
 ###
 # Routing for your application.
@@ -23,6 +24,37 @@ def home():
 def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
+
+@app.route('/properties/create')
+def createproperty():
+    if request.method == 'GET':
+        return render_template('createproperty.html')
+    elif request.method == 'POST':
+        title = request.form['title']
+        bathroom_no = request.form['bathroom_no']
+        bedroom_no = request.form['bedroom_no']
+        type = request.form['type']
+        description = request.form['description']
+        pic = request.files['pic']
+        if not allowed_file(pic.filename):
+            return "wrong fie extension"
+        filename = secure_filename(pic.filename)
+        pic.save(os.path.join(app.config['UPLOAD_FOLDER'],filename)) 
+        property = Property(title, bathroom_no, bedroom_no, type, description, pic)
+        db.session.add(property)
+        db.session.commit()
+        flash('Property was successfully added')
+    return redirect(url_for('properties'))
+    
+
+@app.route('/properties')
+def properties():
+    return render_template('properties.html', property = Property.query.all())
+
+
+@app.route('/properties/<propertyid>')
+def viewproperty():
+    return render_template('viewproperty.html')
 
 
 ###
