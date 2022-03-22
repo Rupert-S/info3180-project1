@@ -4,10 +4,12 @@ Jinja2 Documentation:    https://jinja.palletsprojects.com/
 Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
-
+import os
 from app import app
-from flask import render_template, request, redirect, url_for
+from app.forms import AddProperty
+from flask import render_template, request, redirect, url_for, flash, send_from_directory
 from app.models import Property
+from werkzeug.utils import secure_filename
 from . import db
 
 ###
@@ -25,37 +27,40 @@ def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
 
-@app.route('/properties/create')
+@app.route('/properties/create', methods=['POST', 'GET'])
 def createproperty():
-    if request.method == 'GET':
-        return render_template('createproperty.html')
-    elif request.method == 'POST':
-        title = request.form['title']
-        bathroom_no = request.form['bathroom_no']
-        bedroom_no = request.form['bedroom_no']
-        type = request.form['type']
-        description = request.form['description']
+    form = AddProperty()
+    if request.method == 'POST':
+        title = form.title.data
+        location = form.location.data
+        bathroom_no = form.bathroom_no.data
+        bedroom_no = form.bedroom_no.data
+        type = form.type.data
+        description = form.description.data
+        price = form.price.data
         pic = request.files['pic']
-        if not allowed_file(pic.filename):
-            return "wrong fie extension"
         filename = secure_filename(pic.filename)
         pic.save(os.path.join(app.config['UPLOAD_FOLDER'],filename)) 
-        property = Property(title, bathroom_no, bedroom_no, type, description, pic)
+        property = Property(title, location, bathroom_no, bedroom_no, type, description, price, filename)
         db.session.add(property)
         db.session.commit()
         flash('Property was successfully added')
-    return redirect(url_for('properties'))
+        return redirect(url_for('properties'))
+    return render_template('createproperty.html', form = form)
     
 
 @app.route('/properties')
 def properties():
-    return render_template('properties.html', property = Property.query.all())
+    return render_template('properties.html', properties = Property.query.all())
 
 
 @app.route('/properties/<propertyid>')
 def viewproperty():
     return render_template('viewproperty.html')
 
+@app.route('/app/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
 
 ###
 # The functions below should be applicable to all Flask apps.

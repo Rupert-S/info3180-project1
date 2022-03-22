@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
 {% block main %}
-
+<div class="properties-container">
+    {%for property in properties%}
+    <div class="property-card">
+        <img src="{{url_for('get_image', filename=property.pic)}}" alt="Manor" class="pic">
+        <ul>
+            <li class="title">{{property.title}}</li>
+            <li class="location">{{property.location }}</li>
+            <li class="price">{{property.price }}</li>
+            <li><button type="submit" class="viewprop btn">View Property</button></li>
+        </ul>
+    </div>
+    {%endfor%}
+</div>
 {% endblock %}

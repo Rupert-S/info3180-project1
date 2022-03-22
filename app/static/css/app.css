@@ -1,3 +1,21 @@
 body {
     padding-top: 5rem;
 }
+
+.properties-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 10px;
+    gap: 5px;
+    margin: 1px;
+    background-color: aliceblue;
+}
+
+.pic{
+    width: 80%;
+    height: 80%;
+}
+
+.view-btn{
+    padding-bottom: 5em;
+}
