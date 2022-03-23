@@ -11,6 +11,7 @@ from flask import render_template, request, redirect, url_for, flash, send_from_
 from app.models import Property
 from werkzeug.utils import secure_filename
 from . import db
+from sqlalchemy import select
 
 ###
 # Routing for your application.
@@ -55,10 +56,11 @@ def properties():
 
 
 @app.route('/properties/<propertyid>')
-def viewproperty():
-    return render_template('viewproperty.html')
+def viewproperty(propertyid):
+    property = Property.query.filter_by(id=propertyid).first()
+    return render_template('viewproperty.html', property=property)
 
-@app.route('/app/uploads/<filename>')
+@app.route('/uploads/<filename>')
 def get_image(filename):
     return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
 

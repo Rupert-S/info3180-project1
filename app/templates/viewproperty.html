@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="view-container">
+        <img src="{{url_for('get_image', filename=property.pic)}}" alt="Photo of Property" class="pic">
+    <div class="view-info">
+        <div class="title">
+            {{property.title}}
+        </div>
+        <div class="price">
+            {{property.price }}
+        </div>
+        <div class="type">
+            {{property.type }}
+        </div>
+        <div class="description">
+            {{property.description }} 
+        </div>
+        <div class="bedroom_no">
+            {{property.bedroom_no}} Bedrooms
+        </div>
+        <div class="bathroom_no">
+            {{property.bathroom_no}} Bathrooms
+        </div>
+        <div class="location">
+            {{property.location}}
+        </div>
+    </div>
+</div>
+{% endblock %}
